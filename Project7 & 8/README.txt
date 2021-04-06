@@ -1,3 +1,5 @@
+Use .class files for below vvv
+
 Sample usage:
 Single File (same directory as java file and cmd):
 java VMTranslator SimpleAdd.vm
