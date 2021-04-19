@@ -1,0 +1,17 @@
+function Main.main 1
+push constant 0
+push constant 0
+push constant 10
+push constant 10
+call Screen.drawRectangle 4
+pop temp 0
+call Drawer.new 0
+pop local 0
+push local 0
+call Drawer.draw 1
+pop temp 0
+push local 0
+call Drawer.dispose 1
+pop temp 0
+push constant 0
+return

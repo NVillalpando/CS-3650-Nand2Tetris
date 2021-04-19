@@ -1,0 +1,87 @@
+class Drawer {
+	field boolean trail, exit;
+	field int x, y, direction;
+	
+	constructor Drawer new() {
+	let trail = false;
+	let exit = false;
+	let x = 0;
+	let y = 0;
+	let direction = 0;
+	return this;
+	}
+	
+	// Method to perform the whole draw process. Calls many other methods to help.
+	method void draw() {
+	var char pressed;
+	let pressed = 0;
+	
+	// Program runs until q key is pressed to exit. Await user input.
+	while (pressed = 0) { let pressed = Keyboard.keyPressed(); }
+		
+	// Setup for upcoming loop.
+	if (exit) { let exit = true; }
+	else {
+		do whatsPressed(pressed);
+		// Drawing while loop.
+		while (~exit) {
+			if (~trail) { do move(); }
+			else { do moveTrail(); }
+			let pressed = 0;
+			while (pressed = 0) { let pressed = Keyboard.keyPressed(); }
+			do whatsPressed(pressed);
+		}
+	}
+	return;
+	}
+
+	// Determines which key was pressed and if it was important.
+	method void whatsPressed(char pressed) {
+		let direction = 0;
+		// Checks to see which key was pressed and then proceeds to correct loop.
+		if (pressed = 81) { let exit = true; }	// q key for exit
+		if (pressed = 140) { 
+			if (trail) { let trail = false; } // esc key to set trail when moving
+			else { let trail = true; }
+		}
+		if (pressed = 131) { let direction = 1; } // up arrow for movement
+		if (pressed = 133) { let direction = 2; } // down arrow
+		if (pressed = 130) { let direction = 3; } // left arrow
+		if (pressed = 132) { let direction = 4; } // right arrow
+		return;
+	}
+
+	// Moves pixel without removing prior pixel.
+	method void moveTrail() {
+		if (direction = 1) {
+			if (~(y = 0)) {do Screen.drawRectangle(x, y - 10, x + 10, y); let y = y - 10;} 	 // up
+		}
+		if (direction = 2) {
+			if (~(y > 230)) {do Screen.drawRectangle(x, y + 10, x + 10, y + 20); let y = y + 10;} // down
+		}
+		if (direction = 3) {
+			if (~(x = 0)) {do Screen.drawRectangle(x - 10, y, x, y + 10); let x = x - 10;}	 // left
+		}
+		if (direction = 4) {
+			if (~(x > 490)) {do Screen.drawRectangle(x + 10, y, x + 20, y + 10); let x = x + 10;} // right
+		}
+		do Sys.wait(2000);
+		return;
+	}
+
+	// Moves pixel while removing prior pixel.
+	method void move() {
+		do Screen.setColor(false);
+		do Screen.drawRectangle(x, y, x + 10, y + 10);
+		do Screen.setColor(true);
+		do moveTrail();
+		return;
+	}
+
+	// Disposes this application.
+	method void dispose() {
+		do Memory.deAlloc(this);
+		return;
+	}
+	
+}

@@ -1,0 +1,11 @@
+// Application that simulates free canvas drawing, description given in word document.
+class Main {
+	function void main() {
+		var Drawer drawer;
+		do Screen.drawRectangle(0, 0, 10, 10);
+		let drawer = Drawer.new();
+		do drawer.draw();
+		do drawer.dispose();
+		return;
+	}
+}
