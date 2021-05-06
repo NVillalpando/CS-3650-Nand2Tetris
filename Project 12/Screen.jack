@@ -1,0 +1,104 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 256 rows (indexed 0..255, top to bottom)
+ * of 512 pixels each (indexed 0..511, left to right). The top left pixel on 
+ * the screen is indexed (0,0).
+ */
+class Screen {
+
+    static bool color;
+    static Array screen;
+
+    /** Initializes the Screen. */
+    function void init() {
+	let color = true;
+	let screen = 16384;
+	return;
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+	var int i;
+	let i = 0;
+	while (i < 8192) { let screen[i] = false; }
+	return;
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+	let color = b;
+	return;
+    }
+
+    /** Draws the (x,y) pixel, using the current color. */
+    function void drawPixel(int x, int y) {
+	var int address, power;
+	
+	let address = (x / 16) + (y * 32);
+	let mask = Math.powersOf(x & 15);
+
+	// draws pixel on screen with address and calculated mask
+	if (color) { let screen[address] = screen[address] | mask;}
+	else { let screen[address] = screen[address] & ~(mask);}
+    }
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+	var int dx, dy, swap;
+
+	// fixes x1 to be smallest x-coordinate
+	if (x1 > x2) {
+	   let swap = x1;
+	   let x1 = x2;
+	   let x2 = swap;
+	   let swap = y1;
+	   let y1 = y2;
+	   let y2 = swap;
+	}
+	
+	// Determines which helper method to call for drawing the line.
+	let dx = x2 - x1;
+	let dy = y2 - y2;
+
+	if (dy = 0) { do Screen.drawHorizontalLine(x1, x2, y1);}
+	else { if (dx = 0) { do Screen.drawVerticalLine(x1, y1, y2);}
+	else { do Screen.drawDiagonalLine(x1, x2, y1, y2, dx, dy);}}
+	return;
+    }
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+	var int y;
+
+	// loop which draws horizontal lines until y2 line drawn
+	let y  = y1;
+	while (~(y > y2)) {
+	   do Screen.drawHorizontalLine(x1, x2, y);
+	   let y = y + 1;
+	}
+	return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int x, int y, int r) {
+	var int dx, dy;
+	var int rSquared;
+
+	let dy = -r;
+	let rSquared = r * r;
+
+	// draw circle algorithm with assistance from helper method.
+	while(~(dy > r)) {
+	   let dx = Math.sqrt(rSquared-(dy * dy));
+	   do Screen.drawHorizontalLine(x - dx, x + dx, y + dy);
+	   let dy = dy + 1;
+	}
+	return;
+}
